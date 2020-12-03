@@ -13,7 +13,7 @@ proc load_file_at_col(filename:string,
     var inf : File
     inf = open(filename)
     defer: inf.close()
-
+    
     # load the table up
     var current_row = 0
     var line : string
@@ -79,4 +79,4 @@ proc part2(filename:string) =
 
     echo(a*b*c*d*e)
 # part1("input.txt")
-part2("input.txt")
+# part2("input.txt")
