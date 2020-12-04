@@ -46,10 +46,12 @@ proc set_PD(thingdata: seq[string], p : var PD) =
 proc check_valid(p : PD ) : bool =
     # everything true this si valid
     if p.byr and p.iyr and p.eyr and p.hgt and p.hcl and p.ecl and p.pid and p.cid:
+        echo("all fields true:PASS")
         return true
 
     # everything except cid is trur
     if p.byr and p.iyr and p.eyr and p.hgt and p.hcl and p.ecl and p.pid:
+        echo("all fields except CID TRUE PASSED")
         return true
 
     return false
@@ -89,4 +91,5 @@ proc part1(filename:string) =
     echo("valid count: ", valid_count)
 
 
-part1("test_input.txt")
+# part1("test_input.txt")
+part1("input.txt")
