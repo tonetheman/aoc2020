@@ -1,6 +1,6 @@
 
-prog : prog.nim
+prog : prog.nim pd.nim
 	nim c prog.nim
 
-clear :
+clean :
 	rm -f prog
