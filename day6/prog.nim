@@ -11,20 +11,36 @@ proc part1(filename:string) =
     var count = 0
 
     while readline(inf,line):
-        # echo(line)
         for c in line:
             gather[c] = 1
 
         if line=="":
-            # echo(len(gather))
             count += len(gather)
-            # echo("new person")
             gather.clear()
 
-    # echo(len(gather))
-    # echo("last person")
     count += len(gather)
     echo("answer: ",count)
+
+proc handle_break(gather: var Table[char,int], groupcount : var int,
+    res : var int) =
+    # just 1 person each question counts
+    if groupcount==1:
+        res += len(gather)
+    else:
+        # group is larger than 1 person
+        # look for the number of elements with count>1
+        for k,v in pairs(gather):
+            if v>1:
+                # THIS WAS MY DOWNDALL
+                # the count needed to match the number
+                # of people in the group
+                # missed this in first version
+                if groupcount == v:
+                    res += 1
+
+    gather.clear()
+    groupcount = 0
+
 
 proc part2(filename:string) =
     var inf = open(filename)
@@ -36,30 +52,13 @@ proc part2(filename:string) =
 
     var groupcount = 0
     var result = 0
+    var stopcount = 0
 
     while readline(inf,line):
-        # echo(line)
-
         # handle a group break
         if line == "":
-            echo("total count in group: ",groupcount)
-            echo(gather)
-            echo()
-
-            # just 1 person each question counts
-            if groupcount==1:
-                result += len(gather)
-            else:
-                # group is larger than 1 person
-                # look for the number of elements with count>1
-                for k,v in pairs(gather):
-                    # echo("\tX: ",k," ",v)
-                    if v>1:
-                        result += 1
-                        echo("adding 1 to result")
-
-            gather.clear()
-            groupcount = 0
+            handle_break(gather,groupcount,result)
+            stopcount += 1
             continue
 
         # handle a data line
@@ -70,26 +69,12 @@ proc part2(filename:string) =
             else:
                 gather[c] = 1 
 
-    echo("total count in group: ",groupcount)
-    echo(gather)
-    echo()
-    # just 1 person each question counts
-    if groupcount==1:
-        result += len(gather)
-    else:
-        # group is larger than 1 person
-        # look for the number of elements with count>1
-        for k,v in pairs(gather):
-            # echo("\tX: ",k," ",v)
-            if v>1:
-                result += 1
-                echo("adding 1 to result")
-
-
+    # pickup the last group
+    handle_break(gather,groupcount,result)
 
 
     echo("result ", result)
 
 
 
-part2("test_input.txt")
+part2("input.txt")
