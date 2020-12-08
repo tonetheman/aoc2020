@@ -1,38 +1,66 @@
 
 import strutils
+import re
 
-type bag = tuple
+type Bag = tuple
     count : int
     color : string
 
-type pline = tuple
-    mainbag : bag
-    contains : seq[bag]
+type BagContains = tuple
+    mainbag : Bag
+    contains : seq[Bag]
 
-proc parse_line(line : string) =
-    let bd = split(line," bags contain")
-    let leading_bag = (count:1,color:bd[0])
-    echo("leading bag: ",leading_bag)
-    let bags = split(bd[1],",")
-    # echo("bags: ",bags)
-    for b in bags:
-        let bclear = strip(b)
-        echo("\t***",bclear)
-        if startsWith(bclear,"no other bags"):
-            discard
-            # who cares
-        else:
-            echo("\t\t",split(bclear," "))
-            let bags_data = split(bclear," ")
-            let b1 = (count: parseInt(bags_data[0]),color:bclear[1..len(bclear)-1].join(" "))
-            echo("\t\t",b1)
+proc parse_single_line(s:string) :BagContains=
+    let pass1 = s.split(" bags contain ")
+    result.mainbag = (1,pass1[0])
+    # var contains : seq[Bag]
+    let pass2 = pass1[1].split(",")
+    for v in pass2:
+        var matches : array[3,string]
+        let RE = re"\s*(\d+)\s+(\w+)\s+(\w+)"
+        let res = match(v,RE,matches)   
+        if res:     
+            result.contains.add( (parseInt(matches[0]), matches[1..^1].join(" ")) )
+    
 
-proc part1(filename:string) =
-    var inf = open(filename)
-    defer : inf.close()
-
+proc readfile(filename:string) : seq[string] =
+    let inf = open(filename)
+    defer: inf.close()
     var line : string
     while readline(inf,line):
-        parse_line(line)
+        result.add(line)
 
-part1("test_input.txt")
+proc test() =
+    let s = "light red bags contain 1 bright white bag, 2 muted yellow bags."
+
+    echo parse_single_line(s)
+
+proc test1() =
+    let data = readfile("test_input.txt")
+    for line in data:
+        echo parse_single_line(line)
+
+
+proc part1() =
+    
+    let filedata = readfile("test_input.txt")
+    var bags : seq[BagContains]
+    for line in filedata:
+        bags.add(parse_single_line(line))
+
+    let target = "shiny gold"
+
+    var  answer :seq[Bag]
+
+    var direct_count = 0
+
+    for b in bags:
+        echo b
+        for child in b.contains:
+            if target == child.color:
+                answer.add(b.mainbag)
+    
+    echo "ANSWER",answer
+
+
+part1()
