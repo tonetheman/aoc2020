@@ -41,9 +41,15 @@ proc test1() =
         echo parse_single_line(line)
 
 
+proc seqfind(check : Bag, answer:seq[Bag]) : bool =
+    for b in answer:
+        if b.color == check.color:
+            return true
+    return false
+
 proc part1() =
     
-    let filedata = readfile("test_input.txt")
+    let filedata = readfile("input.txt")
     var bags : seq[BagContains]
     for line in filedata:
         bags.add(parse_single_line(line))
@@ -51,16 +57,24 @@ proc part1() =
     let target = "shiny gold"
 
     var  answer :seq[Bag]
-
-    var direct_count = 0
-
+    
     for b in bags:
-        echo b
         for child in b.contains:
             if target == child.color:
-                answer.add(b.mainbag)
-    
-    echo "ANSWER",answer
+                if not seqfind(b.mainbag,answer):
+                    answer.add(b.mainbag)
+
+    # now check the directs
+    for j in countup(0,100): # THIS IS A CHEAT just brute forcing it
+        for i in countup(0,len(answer)-1):
+            let current_bag = answer[i]
+            for b in bags:
+                for child in b.contains:
+                    if current_bag.color == child.color:
+                        if not seqfind(b.mainbag,answer):
+                            answer.add(b.mainbag)
+
+    echo "ANSWER",answer,len(answer)
 
 
 part1()
