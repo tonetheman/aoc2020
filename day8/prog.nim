@@ -74,6 +74,7 @@ proc reload_instructions(filename:string) : seq[string] =
 const HALT_NORMAL  = "HALT_NORMAL"
 const HALT_VISITED = "HALT VISITED"
 const HALT_ACCESS = "HALT_ACCESS"
+const HALT_UNK = "HALT_UNK"
 
 proc run_program(data:seq[string]) : string =
         # keep up with PC that have been visited
@@ -98,24 +99,24 @@ proc run_program(data:seq[string]) : string =
         if visited.hasKey(pc):
             echo("HALT FOR VISITED, acc value is : ",accumlator)
             return HALT_VISITED
-            break
 
         visited[pc] = true
 
         if operation == "nop":
-            echo("DBG: nop: current PC: ",pc," new pc: ",pc+1)
+            # echo("DBG: nop: current PC: ",pc," new pc: ",pc+1)
             pc = pc + 1
         elif operation == "acc":
             let old=accumlator
             accumlator +=  parseInt(argument)
-            echo("DBG: acc: ", argument, " current PC: ",pc," new pc:",pc+1," ",old," ",accumlator)
+            # echo("DBG: acc: ", argument, " current PC: ",pc," new pc:",pc+1," ",old," ",accumlator)
             pc = pc + 1
         elif operation == "jmp":
             let old = pc
             pc = pc + parseInt(argument)
-            echo("DBG: jmp ",argument,"old pc: ", old, " pc: ",pc)
+            # echo("DBG: jmp ",argument,"old pc: ", old, " pc: ",pc)
         else:
             echo("UNKNOWN operation",operation," ",argument)
+            return HALT_UNK
         
         if pc > len(data):
             echo("BROKE FOR ACCESS VIOLATION")
