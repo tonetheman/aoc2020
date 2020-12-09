@@ -77,4 +77,16 @@ proc part1() =
     echo "ANSWER",answer,len(answer)
 
 
-part1()
+                            
+proc part2() =
+    let filedata = readfile("input2.txt")
+    var bags : seq[BagContains]
+    for line in filedata:
+        bags.add(parse_single_line(line))
+
+
+    # TODO: no clue some recursive and stupid
+
+    
+part2()
+# part1()
