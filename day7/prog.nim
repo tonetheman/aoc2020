@@ -10,6 +10,24 @@ type BagContains = tuple
     mainbag : Bag
     contains : seq[Bag]
 
+type Bag2 = tuple
+    color : string
+    contains : seq[string]
+
+proc parse_single_line2(s:string) : Bag2 =
+    let pass1 = s.split(" bags contain ")
+    result.color = pass1[0]
+    # var contains : seq[Bag]
+    let pass2 = pass1[1].split(",")
+    for v in pass2:
+        var matches : array[3,string]
+        let RE = re"\s*(\d+)\s+(\w+)\s+(\w+)"
+        let res = match(v,RE,matches)   
+        if res:
+            for crud in countup(0,parseInt(matches[0])-1):     
+                result.contains.add( matches[1..^1].join(" ") )
+    
+
 proc parse_single_line(s:string) :BagContains=
     let pass1 = s.split(" bags contain ")
     result.mainbag = (1,pass1[0])
@@ -76,17 +94,25 @@ proc part1() =
 
     echo "ANSWER",answer,len(answer)
 
-
                             
 proc part2() =
     let filedata = readfile("input2.txt")
-    var bags : seq[BagContains]
+    var bags : seq[Bag2]
     for line in filedata:
-        bags.add(parse_single_line(line))
+        bags.add(parse_single_line2(line))
+
+    for b in bags:
+        echo b
+
+    var res : seq[string]
+    res[0] = "shiny gold"
+
+    for b in bags:
+        if res[0]==b.color:
+            discard
+            # really need to substitute?
 
 
-    # TODO: no clue some recursive and stupid
 
-    
 part2()
 # part1()
