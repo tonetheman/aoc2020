@@ -1,5 +1,6 @@
 
 import strutils
+import algorithm
 
 proc readfile(filename:string) : seq[int] =
     var inf = open(filename)
@@ -47,5 +48,34 @@ proc part1() =
         current += 1
         
 
+proc part2() =
+    # let target = 127
+    let target = 20874512 #got from part1
 
-part1()
+    # let filename = "test_input.txt"
+    let filename = "input.txt"
+    var data = readfile(filename)
+
+    # need to find contiguous group that sums to this number
+    var group_size = 2
+    while group_size<50:
+        for index in countup(0,len(data)-group_size-1):
+            var sumit = 0
+            for j in countup(0,group_size):
+                sumit += data[index+j]
+            # echo "summit",sumit
+            if sumit == target:
+                echo "FOUND IT ",index," ", group_size
+                echo data[index..index+group_size]
+
+                var junk : seq[int]
+                for tmp in data[index..index+group_size]:
+                    junk.add(tmp)
+                junk.sort()
+                echo junk
+                echo junk[0], " ", junk[^1]
+                echo junk[0] + junk[^1]
+                return
+        group_size += 1
+
+part2()
