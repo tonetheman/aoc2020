@@ -11,9 +11,9 @@ proc readfile(filename:string) : seq[int] =
     while readline(inf,line):
         result.add(parseInt(line))
 
-# const filename = "test_input.txt"
+const filename = "test_input.txt"
 # const filename = "test_input2.txt"
-const filename = "input.txt"
+# const filename = "input.txt"
 
 var data = readfile(filename)
 data.sort()
@@ -58,7 +58,7 @@ proc part1() =
   data.sort()
   echo checkit(data)
 
-proc part2() =
+proc part2bad() =
   # const filename = "test_input.txt"
   # const filename = "test_input2.txt"
   # const filename = "input.txt"
@@ -87,6 +87,17 @@ proc part2() =
 
   echo "good: ", good
   echo "Bad: ", bad
+
+
+
+proc part2() =
+  var data = readfile(filename)
+  data.sort()
+
+  for index in countup(0,len(data)-2):
+    echo index, " ", data[index], " ", data[index+1], " ", (data[index+1]-data[index])
+
+
 
 part2()
 
