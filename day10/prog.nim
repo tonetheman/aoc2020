@@ -11,8 +11,11 @@ proc readfile(filename:string) : seq[int] =
     while readline(inf,line):
         result.add(parseInt(line))
 
+# const filename = "test_input.txt"
+# const filename = "test_input2.txt"
+const filename = "input.txt"
 
-var data = readfile("test_input.txt")
+var data = readfile(filename)
 data.sort()
 
 var charging_outlet = 0
@@ -34,7 +37,7 @@ while true:
     current += 1
     charging_outlet += diff
 
-    
+# add the last diff of 3
+counts[3] += 1
 
-echo counts
-    
+echo counts, counts[3] * counts[1]    
