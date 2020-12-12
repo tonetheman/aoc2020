@@ -3,7 +3,7 @@ import re
 import strutils
 
 type Ship = tuple
-    facing : string
+    facing : int
     posx, posy : int
 
 let P = re"(N|S|E|W|L|R|F)(\d+)"
@@ -21,91 +21,29 @@ proc process(s:string, ship : var Ship) =
 
     case dir
         of "F":
-            if ship.facing=="E":
-                ship.posx += step
-            elif ship.facing=="W":
-                ship.posx -= step
-            elif ship.facing=="N":
-                ship.posy -= step
-            elif ship.facing=="S":
-                ship.posy += step
+          discard
         of "N","S","E","W":
-            if dir=="N":
-                ship.posy -= step
-            elif dir == "S":
-                ship.posy += step
-            elif dir == "W":
-                ship.posx -= step
-            elif dir == "E":
-                ship.posx += step
-            else:
-                echo "INVALID DIR"
+          discard
         of "L","R":
             if dir == "R":
-              # 180, 270, 90 ONLY
-              if step == 90:
-                if ship.facing == "E":
-                  ship.facing = "S"
-                elif ship.facing == "S":
-                  ship.facing = "W"
-                elif ship.facing == "W":
-                  ship.facing = "N"
-                elif ship.facing == "N":
-                  ship.facing = "E"
-              elif step == 180:
-                if ship.facing == "E":
-                  ship.facing ="W"
-                elif ship.facing == "S":
-                  ship.facing = "N"
-                elif ship.facing == "W":
-                  ship.facing = "E"
-                elif ship.facing == "N":
-                  ship.facing = "S"
-              elif step == 270:
-                if ship.facing == "E":
-                  ship.facing = "N"
-                elif ship.facing == "S":
-                  ship.facing ="E"
-                elif ship.facing == "W":
-                  ship.facing = "S"
-                elif ship.facing == "N":
-                  ship.facing = "W"
+              ship.facing += step 
             elif dir == "L":
-              if step ==  90:
-                if ship.facing == "E":
-                  ship.facing = "S"
-                elif ship.facing == "S":
-                  ship.facing =  "W"
-                elif ship.facing == "W":
-                  ship.facing = "N"
-                elif ship.facing == "N":
-                  ship.facing = "E"
-              elif step == 180:
-                if ship.facing == "E":
-                  ship.facing = "W"
-                elif ship.facing == "S":
-                  ship.facing = "N"
-                elif ship.facing == "W":
-                  ship.facing = "E"
-                elif ship.facing == "N":
-                  ship.facing = "S"
-              elif step == 270:
-                if ship.facing == "E":
-                  ship.facing = "N"
-                elif ship.facing == "S":
-                  ship.facing = "E"
-                elif ship.facing == "W":
-                  ship.facing = "S"
-                elif ship.facing == "N":
-                  ship.facing = "W"
+              ship.facing -= step
             else:
-                echo "invalid facing"
+              echo "INVALID DIR FOR L/R"
+            ship.facing = ship.facing mod 360
         else:
             echo "invalid direction"    
 
 
+proc makeship() : Ship =
+  result.facing = 0
+  result.posx = 0
+  result.posy = 0
+  return
+
 proc test1() =
-  var ship = (facing:"E",posx:0,posy:0)
+  var ship = makeship()
   process("F10",ship)
   echo "ship: ",ship
   process("N3",ship)
@@ -130,14 +68,21 @@ proc readfile(filename : string) : seq[string] =
 
 proc part1() =
   let data = readfile("input.txt")
-  var ship = (facing:"E",posx:0,posy:0)
+  var ship = makeship()
   for line in data:
     process(line,ship)
 
   echo "dist: ", abs(ship.posx) + abs(ship.posy)
 
+proc test0() =
+  var ship = makeship()
+  for i in 0..<4:
+    process("L90",ship)
+    echo ship
 
 
-part1()
+test0()
+# test1()
+# part1()
 
 
