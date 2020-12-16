@@ -68,5 +68,66 @@ proc part1() =
   echo "sum is: ",sum
 
 
-part1()
+proc repl( s : var string, index : int,
+  val :int, memory : var Table[int,string]) =
+  echo "repl:s: ",s
 
+  if index==2:
+    for i in countup(0,1):
+      for j in countup(0,1):
+        echo i,j
+  elif index==3:
+    for i in countup(0,1):
+      for j in countup(0,1):
+        for k in countup(0,1):
+          echo i,j,k
+  elif index==4:
+    for i in countup(0,1):
+      for j in countup(0,1):
+        for k in countup(0,1):
+          for l in countup(0,1):
+            echo i,j,k,l
+
+proc masker2(index : int, val : int, mask : string, 
+  memory : var Table[int,string]) = 
+
+  # take where we are writing (index)
+  let aas = toBin(index,LEN)
+  var res = toBin(0,LEN)
+  for idx,c in aas:
+    if mask[idx] == '0':
+      res[idx] = c
+    elif mask[idx] == '1':
+      res[idx] = '1'
+    elif mask[idx] == 'X':
+      res[idx] = 'X'
+
+  # echo "res so far: ", res
+  var countx = 0
+  for c in res:
+    if c=='X':
+      countx += 1
+  echo countx
+  repl(res,countx,val,memory)
+
+proc part2() =
+  const filename = "test_input2.txt"
+  # const filename = "input.txt"
+  var data = readfile(filename)
+  var memory = initTable[int,string]()
+  var mask : string
+  var md : array[2,string]
+  var P = re(r"mem\[(\d+)\] = (\d+)")
+
+  for line in data:
+    let didmatch = match(line,P,md)
+    let ldata = line.split()
+    if ldata[0] == "mask":
+      mask = ldata[2]
+    elif ldata[0].startsWith("mem"):
+      # echo "mem line: ", md
+      masker2(parseInt(md[0]), 
+        parseInt(md[1]),mask,memory)
+
+
+part2()
