@@ -1,58 +1,91 @@
 import strutils
+import re
 
-const OPERS = {"+"}
+let OPERS = { '+', '*' }
 
-proc empty(s : seq[string]) : bool =
+# these are how things are reprensented on
+# the stack
+const ADD = -1
+const MUL = -2
+const EMPTY = -100
+
+# holds INTs not chars
+type Stack = seq[int]
+type StackOStacks = seq[Stack]
+
+proc empty(s : Stack) : bool =
   return len(s)==0
 
-proc peek(s : seq[string]) : string =
-  if s.empty():
-    return " "
-  else:
-    return s[^1]
+proc peek(s : Stack, depth : int = 1) : int =
+  # cheeseball way out of not keeping up with
+  # anything
+  try:
+    return s[^depth]
+  except:
+    return EMPTY
 
-proc eval(s : string) =
-  echo("eval started")
-  var stack : seq[string]
+proc eval(s:string) : int =
   
+  # need a stack of stacks
+  var metaStack : StackOStacks
+  
+  # need the first stack
+  var stack : Stack
+  metaStack.add(stack)
+
   for c in s:
-    echo "current char: ",c
+    let current = c
+    echo("current is: ",current)
 
-    if c in Whitespace:
+    # spaces we ignore
+    if current in Whitespace:
       continue
-    elif c in Digits:
-      if stack.empty():
-        # stack was empty just add it to stack
-        # and keep going
-        stack.add($(c))
-      else:
-        if stack.peek() in OPERS:
-          let operation = stack.pop()
-          echo("operation is ",operation)
-          let operand1 = parseInt(stack.pop())
-          let operand2 = parseInt(c)
 
+    # digits we need to do work
+    if current in Digits:
+      # push the number on the stack
+      stack.add(parseInt($(current)))
 
-        else:
-          stack.add(c)
-    elif c in OPERS:
-      stack.add(c)
+      if stack.peek(2) == ADD:
+        echo("\tneed to add now")
+        let operand2 = stack.pop()
+        discard stack.pop() # the +
+        let operand1 = stack.pop()
+        stack.add(operand1+operand2)
+        continue
+      if stack.peek(2) == MUL:
+        echo("\tneed to mul now")
+        let operand2 = stack.pop()
+        discard stack.pop() # the +
+        let operand1 = stack.pop()
+        stack.add(operand1*operand2)
+        continue
     
+    # operands + * we need to save
+    if current in OPERS:
+      if current=='+':
+        stack.add(ADD)
+        continue
+      elif current == '*':
+        stack.add(MUL)
+        continue
+    
+    if current == '(':
+      # need to make a new stack
+      # and assign out the stack
+      # not sure how to do that with nim
+      discard
 
-    echo("stack at the end: ",stack)
-      
+    if current == ')':
+      discard
+  
+  echo("stack at end: ",stack)
+  return stack[^1]
 
+proc tony_simple_test() =
+  assert 3 == eval("1 + 2")
+  assert 9 == eval("1   + 2*3")
+  assert 71 == eval("1 + 2 * 3 + 4 * 5 + 6")
 
+tony_simple_test()
 
-
-  echo("eval ended")
-  echo("")
-
-
-var s : string
-
-s = "1  + 2"
-eval(s)
-
-# s = "1 + (2+3) + ( 4 * ( 5 +6) )"
-# eval(s)
